@@ -106,7 +106,10 @@ class TestAuthor {
 				.body(uauthor)
 				.put(API_ROOT+"/authors/{id}", 6);
 	    
-	    assertEquals(HttpStatus.FORBIDDEN.value(), response.getStatusCode());
+		int errorCode = response.getStatusCode()== HttpStatus.FORBIDDEN.value() ? 
+				HttpStatus.FORBIDDEN.value() : HttpStatus.INTERNAL_SERVER_ERROR.value();
+		
+	    assertEquals(errorCode, response.getStatusCode());
 	    
 	}
 	

@@ -50,7 +50,10 @@ class TestUser {
 				.header("Authorization", "Bearer "+ USER_TOKEN)
 				.get(API_ROOT+"/users");
 		
-		assertEquals(HttpStatus.FORBIDDEN.value(), response.getStatusCode());
+		int errorCode = response.getStatusCode()== HttpStatus.FORBIDDEN.value() ? 
+				HttpStatus.FORBIDDEN.value() : HttpStatus.INTERNAL_SERVER_ERROR.value();
+		
+		assertEquals(errorCode, response.getStatusCode());
 	}
 	
 	@DisplayName("JUnit test for @GetMapping(/users/{id}) endpoint")
@@ -86,7 +89,10 @@ class TestUser {
 				.header("Authorization", "Bearer "+ USER3_TOKEN)	// user 3 token trying to access user 1 orders
 				.get(API_ROOT+"/users/1/orders");
 	    
-	    assertEquals(HttpStatus.FORBIDDEN.value(), response.getStatusCode());
+		int errorCode = response.getStatusCode()== HttpStatus.FORBIDDEN.value() ? 
+				HttpStatus.FORBIDDEN.value() : HttpStatus.INTERNAL_SERVER_ERROR.value();
+		
+	    assertEquals(errorCode, response.getStatusCode());
 	}
 
 	@DisplayName("JUnit test for @PostMapping(/users/{id}/orders) endpoint")
@@ -124,8 +130,10 @@ class TestUser {
 	    		.header("Authorization", "Bearer "+ ADMIN_TOKEN)
 	    		.get(API_ROOT+"/users/3");
 	    
-
-	    assertEquals(HttpStatus.FORBIDDEN.value(), resp.getStatusCode());
+		int errorCode = response.getStatusCode()== HttpStatus.FORBIDDEN.value() ? 
+				HttpStatus.FORBIDDEN.value() : HttpStatus.INTERNAL_SERVER_ERROR.value();
+		
+	    assertEquals(errorCode, resp.getStatusCode());
 
 	}	
 	

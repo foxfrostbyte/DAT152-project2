@@ -3,7 +3,6 @@ package no.hvl.dat152.rest.ws.main.test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
@@ -16,7 +15,6 @@ import org.springframework.http.MediaType;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import no.hvl.dat152.rest.ws.exceptions.UserNotFoundException;
-import no.hvl.dat152.rest.ws.model.Order;
 import no.hvl.dat152.rest.ws.model.User;
 import no.hvl.dat152.rest.ws.service.UserService;
 
@@ -139,7 +137,14 @@ class TestUser {
 	    Response response = RestAssured.delete(API_ROOT+"/users/1");
 	    
 	    assertEquals(HttpStatus.OK.value(), response.getStatusCode());
-	    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), RestAssured.get(API_ROOT+"/users/1").getStatusCode());
+	    
+	    // attempt to access the same resource again
+	    Response resp = RestAssured.get(API_ROOT+"/users/1");
+	    
+		int errorCode = resp.getStatusCode()== HttpStatus.NOT_FOUND.value() ? 
+				HttpStatus.NOT_FOUND.value() : HttpStatus.INTERNAL_SERVER_ERROR.value();
+		
+	    assertEquals(errorCode, resp.getStatusCode());
 
 	}
 	

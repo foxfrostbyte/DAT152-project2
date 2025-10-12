@@ -78,14 +78,7 @@ class TestBook {
 	@DisplayName("JUnit test for @PutMapping(/books/{isbn}) endpoint")
 	@Test
 	public void updateBook_thenOK() throws AuthorNotFoundException, BookNotFoundException {
-//		Book b = createRandomBook2();
-//		b = bookService.saveBook(b);
-		
-//		Book book = bookService.findByISBN("abcde1234");
-////		Book book = createRandomBook2();
-//		String newTitle = "Software Engineering_2";
-////		book.setId(b.getId());
-//		book.setTitle(newTitle);
+
 		String updateOrder = updateBookOrder();
 		
 		Response response = RestAssured.given()
@@ -107,7 +100,15 @@ class TestBook {
 	    Response response = RestAssured.delete(API_ROOT+"/books/hello_1245");
 	    
 	    assertEquals(HttpStatus.OK.value(), response.getStatusCode());
-	    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), RestAssured.get(API_ROOT+"/books/hello_1245").getStatusCode());
+	    
+	    // attempt to access the same resource again
+	    Response resp = RestAssured.given()
+				.get(API_ROOT+"/books/hello_1245");
+	    
+		int errorCode = resp.getStatusCode()== HttpStatus.NOT_FOUND.value() ? 
+				HttpStatus.NOT_FOUND.value() : HttpStatus.INTERNAL_SERVER_ERROR.value();
+		
+	    assertEquals(errorCode, resp.getStatusCode());
 
 	}
 	

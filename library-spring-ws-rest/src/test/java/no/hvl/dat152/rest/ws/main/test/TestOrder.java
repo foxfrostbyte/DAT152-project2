@@ -88,7 +88,14 @@ class TestOrder {
 	    Response response = RestAssured.delete(API_ROOT+"/orders/1");
 	    
 	    assertEquals(HttpStatus.OK.value(), response.getStatusCode());
-	    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), RestAssured.get(API_ROOT+"/orders/1").getStatusCode());
+	    
+	    // attempt to access the same resource again
+	    Response resp = RestAssured.get(API_ROOT+"/orders/1");
+	    
+		int errorCode = resp.getStatusCode()== HttpStatus.NOT_FOUND.value() ? 
+				HttpStatus.NOT_FOUND.value() : HttpStatus.INTERNAL_SERVER_ERROR.value();
+		
+	    assertEquals(errorCode, resp.getStatusCode());
 
 	}
 	

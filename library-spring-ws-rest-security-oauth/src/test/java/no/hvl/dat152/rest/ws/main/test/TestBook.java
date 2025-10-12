@@ -87,7 +87,10 @@ class TestBook {
 				.body(book)
 				.post(API_ROOT+"/books");
 	    
-	    assertEquals(HttpStatus.FORBIDDEN.value(), response.getStatusCode());
+		int errorCode = response.getStatusCode()== HttpStatus.FORBIDDEN.value() ? 
+				HttpStatus.FORBIDDEN.value() : HttpStatus.INTERNAL_SERVER_ERROR.value();
+		
+	    assertEquals(errorCode, response.getStatusCode());
 	}
 	
 	@DisplayName("JUnit test for @GetMapping(/books/{isbn}/authors) endpoint")

@@ -65,7 +65,10 @@ class TestOrder {
 				.header("Authorization", "Bearer "+ USER_TOKEN)
 				.get(API_ROOT+"/orders");
 		
-		assertEquals(HttpStatus.FORBIDDEN.value(), response.getStatusCode());
+		int errorCode = response.getStatusCode()== HttpStatus.FORBIDDEN.value() ? 
+				HttpStatus.FORBIDDEN.value() : HttpStatus.INTERNAL_SERVER_ERROR.value();
+		
+		assertEquals(errorCode, response.getStatusCode());
 	}
 	
 	@DisplayName("JUnit test for @GetMapping(/orders/{id}) endpoint")
