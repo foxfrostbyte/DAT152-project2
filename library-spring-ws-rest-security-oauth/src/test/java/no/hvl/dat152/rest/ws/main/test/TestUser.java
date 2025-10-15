@@ -130,8 +130,8 @@ class TestUser {
 	    		.header("Authorization", "Bearer "+ ADMIN_TOKEN)
 	    		.get(API_ROOT+"/users/3");
 	    
-		int errorCode = response.getStatusCode()== HttpStatus.FORBIDDEN.value() ? 
-				HttpStatus.FORBIDDEN.value() : HttpStatus.INTERNAL_SERVER_ERROR.value();
+		int errorCode = resp.getStatusCode()== HttpStatus.NOT_FOUND.value() ? 
+				HttpStatus.NOT_FOUND.value() : HttpStatus.INTERNAL_SERVER_ERROR.value();
 		
 	    assertEquals(errorCode, resp.getStatusCode());
 

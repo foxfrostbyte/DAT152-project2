@@ -139,7 +139,7 @@ class TestBook {
 				.header("Authorization", "Bearer "+ ADMIN_TOKEN)
 	    		.get(API_ROOT+"/books/hello_1245");
 	    
-		int errorCode = response.getStatusCode()== HttpStatus.NOT_FOUND.value() ? 
+		int errorCode = resp.getStatusCode()== HttpStatus.NOT_FOUND.value() ? 
 				HttpStatus.NOT_FOUND.value() : HttpStatus.INTERNAL_SERVER_ERROR.value();
 		
 	    assertEquals(errorCode, resp.getStatusCode());
