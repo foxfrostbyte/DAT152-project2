@@ -29,8 +29,19 @@ import no.hvl.dat152.rest.ws.service.AuthorService;
 @RequestMapping("/elibrary/api/v1")
 public class AuthorController {
 
-	
-	// TODO - getAllAuthor (@Mappings, URI, and method)
+    @Autowired
+    private AuthorService authorService;
+
+    @GetMapping("/authors")
+    public ResponseEntity<Object> getAllAuthors() {
+
+        List<Author> authors = authorService.findAll();
+
+        if(authors.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(authors, HttpStatus.OK);
+    }
 	
 	// TODO - getAuthor (@Mappings, URI, and method)
 	

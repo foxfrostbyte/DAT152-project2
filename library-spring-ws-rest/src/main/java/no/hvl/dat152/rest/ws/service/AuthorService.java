@@ -38,7 +38,9 @@ public class AuthorService {
 	// TODO public Author updateAuthor(Author author, int id)
 		
 	
-	// TODO public List<Author> findAll()
+	public List<Author> findAll() {
+		return (List<Author>) authorRepository.findAll();
+	}
 	
 	
 	// TODO public void deleteById(int id) throws AuthorNotFoundException 
