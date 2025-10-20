@@ -42,8 +42,12 @@ public class AuthorController {
         }
         return new ResponseEntity<>(authors, HttpStatus.OK);
     }
-	
-	// TODO - getAuthor (@Mappings, URI, and method)
+
+    @GetMapping("/authors/{id}")
+    public ResponseEntity<Object> getAuthor(@PathVariable int id) throws AuthorNotFoundException {
+        Author author = authorService.findById(id);
+        return new ResponseEntity<>(author, HttpStatus.OK);
+    }
 	
 	// TODO - getBooksByAuthorId (@Mappings, URI, and method)
 	
