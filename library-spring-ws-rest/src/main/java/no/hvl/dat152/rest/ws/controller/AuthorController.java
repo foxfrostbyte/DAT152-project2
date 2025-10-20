@@ -34,9 +34,7 @@ public class AuthorController {
 
     @GetMapping("/authors")
     public ResponseEntity<Object> getAllAuthors() {
-
         List<Author> authors = authorService.findAll();
-
         if(authors.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
@@ -60,8 +58,11 @@ public class AuthorController {
         Author a = authorService.saveAuthor(author);
         return new ResponseEntity<>(a, HttpStatus.CREATED);
     }
-	
-	// TODO - updateAuthor (@Mappings, URI, and method)
 
+    @PutMapping("/authors/{id}")
+    public ResponseEntity<Object> updateAuthor(@RequestBody Author author, @PathVariable int id) throws AuthorNotFoundException {
+        Author a = authorService.updateAuthor(author, id);
+        return new ResponseEntity<>(a, HttpStatus.OK);
+    }
 
 }
