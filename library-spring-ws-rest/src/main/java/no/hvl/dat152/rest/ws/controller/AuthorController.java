@@ -54,8 +54,12 @@ public class AuthorController {
         List<Book> books = authorService.findBooksByAuthorId(id);
         return new ResponseEntity<>(books, HttpStatus.OK);
     }
-	
-	// TODO - createAuthor (@Mappings, URI, and method)
+
+    @PostMapping("/authors")
+    public ResponseEntity<Object> createAuthor(@RequestBody Author author) {
+        Author a = authorService.saveAuthor(author);
+        return new ResponseEntity<>(a, HttpStatus.CREATED);
+    }
 	
 	// TODO - updateAuthor (@Mappings, URI, and method)
 

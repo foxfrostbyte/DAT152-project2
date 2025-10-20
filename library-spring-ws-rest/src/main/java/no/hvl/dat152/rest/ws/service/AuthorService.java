@@ -36,6 +36,10 @@ public class AuthorService {
 	}
 	
 	// TODO public saveAuthor(Author author)
+	public Author saveAuthor(Author author) {
+		return authorRepository.save(author);
+	}
+
 	// TODO public Author updateAuthor(Author author, int id)
 
 	public List<Author> findAll() {
