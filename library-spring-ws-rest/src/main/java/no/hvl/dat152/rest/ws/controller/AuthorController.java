@@ -48,8 +48,12 @@ public class AuthorController {
         Author author = authorService.findById(id);
         return new ResponseEntity<>(author, HttpStatus.OK);
     }
-	
-	// TODO - getBooksByAuthorId (@Mappings, URI, and method)
+
+    @GetMapping("/authors/{id}/books")
+    public ResponseEntity<Object> getBooksByAuthorId(@PathVariable int id) {
+        List<Book> books = authorService.findBooksByAuthorId(id);
+        return new ResponseEntity<>(books, HttpStatus.OK);
+    }
 	
 	// TODO - createAuthor (@Mappings, URI, and method)
 	
