@@ -1,10 +1,6 @@
-/**
- * 
- */
 package no.hvl.dat152.rest.ws.service;
 
 import java.util.List;
-import java.util.Set;
 
 import no.hvl.dat152.rest.ws.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +12,7 @@ import no.hvl.dat152.rest.ws.model.Book;
 import no.hvl.dat152.rest.ws.repository.AuthorRepository;
 
 /**
- * @author tdoy
+ * Service layer for managing authors
  */
 @Service
 public class AuthorService {
@@ -27,9 +23,8 @@ public class AuthorService {
 	private BookRepository bookRepository;
 	
 	public Author findById(int id) throws AuthorNotFoundException {
-		Author author = authorRepository.findById(id)
-				.orElseThrow(()-> new AuthorNotFoundException("Author with the id: "+id+ "not found!"));
-		return author;
+        return authorRepository.findById(id)
+                .orElseThrow(()-> new AuthorNotFoundException("Author with the id: "+id+ "not found!"));
 	}
 
 	public Author saveAuthor(Author author) {
@@ -51,7 +46,8 @@ public class AuthorService {
 		return (List<Author>) authorRepository.findAll();
 	}
 
-	// TODO public void deleteById(int id) throws AuthorNotFoundException 
+	// TODO public void deleteById(int id) throws AuthorNotFoundException
+	// Unsure if implementation needed. Lacks to-do in controller + test for it. Asked teacher. Might delete later.
 
 	public List<Book> findBooksByAuthorId(int id) {
 		return bookRepository.findBooksByAuthorId(id);

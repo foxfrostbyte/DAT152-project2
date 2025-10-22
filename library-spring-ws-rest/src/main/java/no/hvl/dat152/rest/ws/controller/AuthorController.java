@@ -1,10 +1,6 @@
-/**
- * 
- */
 package no.hvl.dat152.rest.ws.controller;
 
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,7 +19,7 @@ import no.hvl.dat152.rest.ws.model.Book;
 import no.hvl.dat152.rest.ws.service.AuthorService;
 
 /**
- * 
+ * REST controller for managing authors
  */
 @RestController
 @RequestMapping("/elibrary/api/v1")
