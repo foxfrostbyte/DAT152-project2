@@ -25,8 +25,8 @@ public class BookService {
 
 	@Autowired
 	private BookRepository bookRepository;
-	
-	
+
+
 	public Book saveBook(Book book) {
 		
 		return bookRepository.save(book);
@@ -41,10 +41,10 @@ public class BookService {
 	
 	
 	public Book findByISBN(String isbn) throws BookNotFoundException {
-		
+
 		Book book = bookRepository.findByIsbn(isbn)
 				.orElseThrow(() -> new BookNotFoundException("Book with isbn = "+isbn+" not found!"));
-		
+
 		return book;
 	}
 	
@@ -53,6 +53,11 @@ public class BookService {
 	// TODO public List<Book> findAllPaginate(Pageable page)
 	
 	// TODO public Set<Author> findAuthorsOfBookByISBN(String isbn)
+	public Set<Author> findAuthorsOfBookByISBN(String isbn) throws BookNotFoundException {
+		Book book = bookRepository.findByIsbn(isbn)
+				.orElseThrow(() -> new BookNotFoundException("Book with isbn = "+isbn+" not found!"));
+		return book.getAuthors();
+	}
 	
 	// TODO public void deleteById(long id)
 	
