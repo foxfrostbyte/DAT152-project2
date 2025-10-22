@@ -39,32 +39,25 @@ public class BookController {
 
 	@Autowired
 	private BookService bookService;
-	
+
 	@GetMapping("/books")
 	public ResponseEntity<Object> getAllBooks(){
-		
 		List<Book> books = bookService.findAll();
-		
 		if(books.isEmpty())
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		
 		return new ResponseEntity<>(books, HttpStatus.OK);		
 	}
 	
 	@GetMapping("/books/{isbn}")
 	public ResponseEntity<Object> getBook(@PathVariable String isbn) throws BookNotFoundException{
-		
 		Book book = bookService.findByISBN(isbn);
-		
 		return new ResponseEntity<>(book, HttpStatus.OK);
 				
 	}
 	
 	@PostMapping("/books")
 	public ResponseEntity<Book> createBook(@RequestBody Book book){
-		
 		Book nbook = bookService.saveBook(book);
-		
 		return new ResponseEntity<>(nbook, HttpStatus.CREATED);
 	}
 	
@@ -76,6 +69,11 @@ public class BookController {
 	}
 	
 	// TODO - updateBookByISBN (@Mappings, URI, and method)
+	@PutMapping("/books/{isbn}")
+	public ResponseEntity<Object> updateBookByISBN(@RequestBody Book book, @PathVariable String isbn) throws BookNotFoundException {
+		Book b = bookService.updateBook(book, isbn);
+		return new ResponseEntity<>(b, HttpStatus.OK);
+	}
 	
 	// TODO - deleteBookByISBN (@Mappings, URI, and method)
 

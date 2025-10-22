@@ -49,9 +49,18 @@ public class BookService {
 	}
 	
 	// TODO public Book updateBook(Book book, String isbn)
+	public Book updateBook(Book book, String isbn) throws BookNotFoundException {
+		Book b = bookRepository.findByIsbn(isbn)
+				.orElseThrow(() -> new BookNotFoundException("Book with isbn = "+isbn+" not found!"));
+
+		b.setTitle(book.getTitle());
+		b.setAuthors(book.getAuthors());
+
+		return b;
+	}
 	
 	// TODO public List<Book> findAllPaginate(Pageable page)
-	
+
 	// TODO public Set<Author> findAuthorsOfBookByISBN(String isbn)
 	public Set<Author> findAuthorsOfBookByISBN(String isbn) throws BookNotFoundException {
 		Book book = bookRepository.findByIsbn(isbn)
