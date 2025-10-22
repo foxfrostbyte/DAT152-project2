@@ -1,8 +1,8 @@
 package no.hvl.dat152.rest.ws.service;
 
 import java.util.List;
+import java.util.Set;
 
-import no.hvl.dat152.rest.ws.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +19,6 @@ public class AuthorService {
 
 	@Autowired
 	private AuthorRepository authorRepository;
-	@Autowired
-	private BookRepository bookRepository;
 	
 	public Author findById(int id) throws AuthorNotFoundException {
         return authorRepository.findById(id)
@@ -49,7 +47,9 @@ public class AuthorService {
 	// TODO public void deleteById(int id) throws AuthorNotFoundException
 	// Unsure if implementation needed. Lacks to-do in controller + test for it. Asked teacher. Might delete later.
 
-	public List<Book> findBooksByAuthorId(int id) {
-		return bookRepository.findBooksByAuthorId(id);
+	public Set<Book> findBooksByAuthorId(int id) throws AuthorNotFoundException {
+		Author author = authorRepository.findById(id)
+				.orElseThrow(()-> new AuthorNotFoundException("Author with the id: "+id+ "not found!"));
+		return author.getBooks();
 	}
 }
