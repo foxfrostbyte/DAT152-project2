@@ -1,10 +1,6 @@
-/**
- * 
- */
 package no.hvl.dat152.rest.ws.controller;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,13 +16,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 import no.hvl.dat152.rest.ws.exceptions.OrderNotFoundException;
 import no.hvl.dat152.rest.ws.model.Order;
 import no.hvl.dat152.rest.ws.service.OrderService;
 
 /**
- * @author tdoy
+ * REST API controller for orders
  */
 @RestController
 @RequestMapping("/elibrary/api/v1")
@@ -35,8 +32,6 @@ public class OrderController {
 	@Autowired
 	private OrderService orderService;
 
-	// TODO - getAllBorrowOrders (@Mappings, URI=/orders, and method) + filter by expiry and paginate 
-
  	@GetMapping("/orders")
     public ResponseEntity<Object> getAllBorrowOrders(
             @RequestParam(required = false) String expiry,
@@ -44,7 +39,7 @@ public class OrderController {
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        List<Order> orders = new ArrayList<>();
+        List<Order> orders;
 
         if (expiry != null && !expiry.isBlank()) {
             LocalDate expiryDate = LocalDate.parse(expiry);
@@ -59,8 +54,6 @@ public class OrderController {
 
         return new ResponseEntity<>(orders, HttpStatus.OK);
     }
-	
-	// TODO - getBorrowOrder (@Mappings, URI=/orders/{id}, and method)
 
  	@GetMapping("/orders/{id}")
     public ResponseEntity<Object> getBorrowOrder(@PathVariable Long id)
@@ -68,10 +61,15 @@ public class OrderController {
 
         Order order = orderService.findOrder(id);
 
+        order.add(linkTo(methodOn(OrderController.class)
+                .getBorrowOrder(id))
+                .withSelfRel());
+        order.add(linkTo(methodOn(OrderController.class)
+                .getAllBorrowOrders(null, 0, 10))
+                .withRel("allOrders"));
+
         return new ResponseEntity<>(order, HttpStatus.OK);
     }
-	
-	// TODO - updateOrder (@Mappings, URI=/orders/{id}, and method)
 
    @PutMapping("/orders/{id}")
     public ResponseEntity<Object> updateOrder(
@@ -82,14 +80,12 @@ public class OrderController {
         Order updatedOrder = orderService.updateOrder(order, id);
         return new ResponseEntity<>(updatedOrder, HttpStatus.OK);
     }
-	
-	// TODO - deleteBookOrder (@Mappings, URI=/orders/{id}, and method)
 
     @DeleteMapping("/orders/{id}")
     public ResponseEntity<Object> deleteBookOrder(@PathVariable Long id)
             throws OrderNotFoundException {
 
         orderService.deleteOrder(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

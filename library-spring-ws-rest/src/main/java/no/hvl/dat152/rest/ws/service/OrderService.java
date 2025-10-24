@@ -1,6 +1,3 @@
-/**
- * 
- */
 package no.hvl.dat152.rest.ws.service;
 
 import java.time.LocalDate;
@@ -16,7 +13,7 @@ import no.hvl.dat152.rest.ws.model.Order;
 import no.hvl.dat152.rest.ws.repository.OrderRepository;
 
 /**
- * @author tdoy
+ * Service layer for orders
  */
 @Service
 public class OrderService {
@@ -25,44 +22,28 @@ public class OrderService {
 	private OrderRepository orderRepository;
 	
 	public Order saveOrder(Order order) {
-		
 		order = orderRepository.save(order);
-		
 		return order;
 	}
 	
 	public Order findOrder(Long id) throws OrderNotFoundException {
-		
-		Order order = orderRepository.findById(id)
-				.orElseThrow(()-> new OrderNotFoundException("Order with id: "+id+" not found in the order list!"));
-		
-		return order;
+        return orderRepository.findById(id)
+                .orElseThrow(()-> new OrderNotFoundException("Order with id: "+id+" not found in the order list!"));
 	}
-	
-	// TODO public void deleteOrder(Long id)
 
     public void deleteOrder(Long id) throws OrderNotFoundException {
-
         Order existingOrder = findOrder(id);
         orderRepository.delete(existingOrder);
     }
-	
-	// TODO public List<Order> findAllOrders()
 
 	public List<Order> findAllOrders() {
-
         return orderRepository.findAll();
     }
-	
-	// TODO public List<Order> findByExpiryDate(LocalDate expiry, Pageable page)
 
     public List<Order> findByExpiryDate(LocalDate expiry, Pageable page) {
-
         Page<Order> result = orderRepository.findByExpiryBefore(expiry, page);
         return result.getContent();
     }
-	
-	// TODO public Order updateOrder(Order order, Long id)
 
 	public Order updateOrder(Order order, Long id) throws OrderNotFoundException {
 		Order existingOrder = findOrder(id);
