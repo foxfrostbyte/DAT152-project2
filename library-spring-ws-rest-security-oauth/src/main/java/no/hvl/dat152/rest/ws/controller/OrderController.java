@@ -4,12 +4,13 @@
 package no.hvl.dat152.rest.ws.controller;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -36,9 +37,6 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
-    // TODO - getAllBorrowOrders (@Mappings, URI=/orders, and method) + filter by
-    // expiry and paginate
-
     @GetMapping("/orders")
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public ResponseEntity<Object> getAllBorrowOrders(
@@ -47,7 +45,7 @@ public class OrderController {
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        List<Order> orders = new ArrayList<>();
+        List<Order> orders;
 
         if (expiry != null && !expiry.isBlank()) {
             LocalDate expiryDate = LocalDate.parse(expiry);
@@ -63,8 +61,6 @@ public class OrderController {
         return new ResponseEntity<>(orders, HttpStatus.OK);
     }
 
-    // TODO - getBorrowOrder (@Mappings, URI=/orders/{id}, and method)
-
     @GetMapping("/orders/{id}")
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public ResponseEntity<Object> getBorrowOrder(@PathVariable Long id)
@@ -72,10 +68,15 @@ public class OrderController {
 
         Order order = orderService.findOrder(id);
 
+        order.add(linkTo(methodOn(OrderController.class)
+                .getBorrowOrder(id))
+                .withSelfRel());
+        order.add(linkTo(methodOn(OrderController.class)
+                .getAllBorrowOrders(null, 0, 10))
+                .withRel("allOrders"));
+
         return new ResponseEntity<>(order, HttpStatus.OK);
     }
-
-    // TODO - updateOrder (@Mappings, URI=/orders/{id}, and method)
 
     @PutMapping("/orders/{id}")
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
@@ -88,14 +89,12 @@ public class OrderController {
         return new ResponseEntity<>(updatedOrder, HttpStatus.OK);
     }
 
-    // TODO - deleteBookOrder (@Mappings, URI=/orders/{id}, and method)
-
     @DeleteMapping("/orders/{id}")
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public ResponseEntity<Object> deleteBookOrder(@PathVariable Long id)
             throws OrderNotFoundException {
 
         orderService.deleteOrder(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

@@ -39,31 +39,23 @@ public class OrderService {
 		return order;
 	}
 	
-	// TODO public void deleteOrder(Long id)
-
     public void deleteOrder(Long id) throws OrderNotFoundException {
 
         Order existingOrder = findOrder(id);
         orderRepository.delete(existingOrder);
     }
 	
-	// TODO public List<Order> findAllOrders()
-
 	public List<Order> findAllOrders() {
 
         return orderRepository.findAll();
     }
 	
-	// TODO public List<Order> findByExpiryDate(LocalDate expiry, Pageable page)
-
     public List<Order> findByExpiryDate(LocalDate expiry, Pageable page) {
 
         Page<Order> result = orderRepository.findByExpiryBefore(expiry, page);
         return result.getContent();
     }
 	
-	// TODO public Order updateOrder(Order order, Long id)
-
 	public Order updateOrder(Order order, Long id) throws OrderNotFoundException {
 		Order existingOrder = findOrder(id);
 

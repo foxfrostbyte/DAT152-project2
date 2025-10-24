@@ -61,16 +61,12 @@ public class UserController {
 
 	}
 
-	// TODO - createUser (@Mappings, URI=/users, and method)
-
 	@PostMapping("/users")
 	@PreAuthorize("hasAuthority('SCOPE_ADMIN')")
 	public ResponseEntity<Object> createUser(@RequestBody User user) {
 		User savedUser = userService.saveUser(user);
 		return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
 	}
-
-	// TODO - updateUser (@Mappings, URI, and method)
 
 	@PutMapping("/users/{id}")
 	@PreAuthorize("hasAuthority('SCOPE_ADMIN') or @userService.findUser(#id).getEmail() == authentication.name")
@@ -79,17 +75,13 @@ public class UserController {
 		return new ResponseEntity<>(updatedUser, HttpStatus.OK);
 	}
 
-	// TODO - deleteUser (@Mappings, URI, and method)
-
 	@DeleteMapping("/users/{id}")
 	@PreAuthorize("hasAuthority('SCOPE_ADMIN')")
 	public ResponseEntity<Object> deleteUser(@PathVariable Long id)
 			throws UserNotFoundException {
 		userService.deleteUser(id);
-		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
-
-	// TODO - getUserOrders (@Mappings, URI=/users/{id}/orders, and method)
 
 	@GetMapping("/users/{id}/orders")
 	@PreAuthorize("hasAuthority('SCOPE_ADMIN') or @userService.findUser(#id).getEmail() == authentication.name")
@@ -101,8 +93,6 @@ public class UserController {
 		return new ResponseEntity<>(orders, HttpStatus.OK);
 	}
 
-	// TODO - getUserOrder (@Mappings, URI=/users/{uid}/orders/{oid}, and method)
-
 	@GetMapping("/users/{uid}/orders/{oid}")
 	@PreAuthorize("hasAuthority('SCOPE_ADMIN') or @userService.findUser(#uid).getEmail() == authentication.name")
 	public ResponseEntity<Object> getUserOrder(@PathVariable Long uid, @PathVariable Long oid)
@@ -111,17 +101,13 @@ public class UserController {
 		return new ResponseEntity<>(order, HttpStatus.OK);
 	}
 
-	// TODO - deleteUserOrder (@Mappings, URI, and method)
-
 	@DeleteMapping("/users/{uid}/orders/{oid}")
 	@PreAuthorize("hasAuthority('SCOPE_ADMIN') or @userService.findUser(#uid).getEmail() == authentication.name")
 	public ResponseEntity<Object> deleteUserOrder(@PathVariable Long uid, @PathVariable Long oid)
 			throws UserNotFoundException, OrderNotFoundException {
 		userService.deleteOrderForUser(uid, oid);
-		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
-
-	// TODO - createUserOrder (@Mappings, URI, and method) + HATEOAS links
 
 	@PostMapping("/users/{uid}/orders")
 	@PreAuthorize("hasAuthority('SCOPE_ADMIN') or @userService.findUser(#uid).getEmail() == authentication.name")
@@ -143,7 +129,9 @@ public class UserController {
 		order.add(userLink);
 		order.add(deleteLink);
 
-		return new ResponseEntity<>(order, HttpStatus.CREATED);
+		List<Order> orders = List.of(order);
+
+		return new ResponseEntity<>(orders, HttpStatus.CREATED);
 	}
 
 }

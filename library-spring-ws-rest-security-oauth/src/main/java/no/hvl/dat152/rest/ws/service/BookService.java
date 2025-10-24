@@ -12,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import no.hvl.dat152.rest.ws.exceptions.BookNotFoundException;
-import no.hvl.dat152.rest.ws.exceptions.UpdateBookFailedException;
 import no.hvl.dat152.rest.ws.model.Author;
 import no.hvl.dat152.rest.ws.model.Book;
 import no.hvl.dat152.rest.ws.repository.BookRepository;
@@ -48,7 +47,6 @@ public class BookService {
 		return book;
 	}
 	
-	// TODO public Book updateBook(Book book, String isbn)
 	public Book updateBook(Book book, String isbn) throws BookNotFoundException {
 		Book b = bookRepository.findByIsbn(isbn)
 				.orElseThrow(() -> new BookNotFoundException("Book with isbn = "+isbn+" not found!"));
@@ -59,18 +57,23 @@ public class BookService {
 		return b;
 	}
 	
-	// TODO public List<Book> findAllPaginate(Pageable page)
+	public List<Book> findAllPaginate(Pageable page) {
+		Page<Book> books = bookRepository.findAll(page);
+		return books.getContent();
+	}
 
-	// TODO public Set<Author> findAuthorsOfBookByISBN(String isbn)
 	public Set<Author> findAuthorsOfBookByISBN(String isbn) throws BookNotFoundException {
 		Book book = bookRepository.findByIsbn(isbn)
 				.orElseThrow(() -> new BookNotFoundException("Book with isbn = "+isbn+" not found!"));
 		return book.getAuthors();
 	}
+
+	public void deleteById(long id) throws BookNotFoundException {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new BookNotFoundException("Book with id = " + id + " not found!"));
+        bookRepository.delete(book);
+    }
 	
-	// TODO public void deleteById(long id)
-	
-	// TODO public void deleteByISBN(String isbn)
 	public void deleteByISBN(String isbn) throws BookNotFoundException {
 		Book b = bookRepository.findByIsbn(isbn)
 				.orElseThrow(() -> new BookNotFoundException("Book with isbn = "+isbn+" not found!"));
