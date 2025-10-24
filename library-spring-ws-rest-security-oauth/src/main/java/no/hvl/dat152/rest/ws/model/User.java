@@ -16,11 +16,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-
 
 /**
  * @author tdoy
@@ -32,41 +29,31 @@ public class User extends RepresentationModel<User> {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long userid;
-	
+
 	@Column(nullable = false)
 	private String firstname;
-	
+
 	@Column(nullable = false)
 	private String lastname;
-	
-	@Column(nullable = false, length = 50, unique = true)
+
+	@Column(nullable = false, unique = true)
 	private String email;
-	
-//	@Column(nullable = false, length = 64)
-//	@JsonIgnore
-//	private String password;
-	
+
+	private String roles;
+
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", referencedColumnName = "userid")
-	@JoinColumn(name = "user_email", referencedColumnName = "email")
 	private Set<Order> orders = new HashSet<>();
-	
-	@ManyToMany
-	@JoinTable(
-			name = "user_roles",
-			joinColumns = @JoinColumn(name = "user_id"),
-			inverseJoinColumns = @JoinColumn(name = "role_id"))
-	private Set<Role> roles = new HashSet<>();
 
-	public User() {/*default*/}
-	
-	public User(String email, String firstname, String lastname) {
-		this.email = email;
-//		this.password = password;
+	public User() {
+		// default
+	}
+
+	public User(String firstname, String lastname) {
 		this.firstname = firstname;
 		this.lastname = lastname;
 	}
-	
+
 	/**
 	 * @return the userid
 	 */
@@ -109,6 +96,22 @@ public class User extends RepresentationModel<User> {
 		this.lastname = lastname;
 	}
 
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getRoles() {
+		return roles;
+	}
+
+	public void setRoles(String roles) {
+		this.roles = roles;
+	}
+
 	/**
 	 * @return the orders
 	 */
@@ -122,63 +125,41 @@ public class User extends RepresentationModel<User> {
 	public void setOrders(Set<Order> orders) {
 		this.orders = orders;
 	}
-	
+
 	public void addOrder(Order order) {
 		orders.add(order);
 	}
-	
+
 	public void removeOrder(Order order) {
 		orders.remove(order);
 	}
-	
-	/**
-	 * @return the email
-	 */
-	public String getEmail() {
-		return email;
-	}
 
-	/**
-	 * @param email the email to set
-	 */
-	public void setEmail(String email) {
-		this.email = email;
-	}
-	
-	/**
-	 * @return the roles
-	 */
-	public Set<Role> getRoles() {
-		return roles;
-	}
+	// @Override
+	// public final int hashCode() {
+	// final int prime = 31;
+	// int result = 1;
+	// result = prime * result +
+	// ((userid == 0) ? 0 :Long.valueOf(userid).hashCode());
+	// result = prime * result + ((firstname == null) ? 0 : firstname.hashCode());
+	// result = prime * result + ((lastname == null) ? 0 : lastname.hashCode());
+	//
+	// return result;
+	// }
+	//
+	// @Override
+	// public final boolean equals(final Object obj) {
+	// if (this == obj) {
+	// return true;
+	// }
+	// if (obj == null) {
+	// return false;
+	// }
+	// if (getClass() != obj.getClass()) {
+	// return false;
+	// }
+	// User other = (User)obj;
+	//
+	// return this.userid == other.userid;
+	// }
 
-	/**
-	 * @param roles the roles to set
-	 */
-	public void setRoles(Set<Role> roles) {
-		this.roles = roles;
-	}
-	
-	public void addRole(Role role) {
-		this.roles.add(role);
-	}
-	
-	public void removeRole(Role role) {
-		this.roles.remove(role);
-	}
-
-//	/**
-//	 * @param password the password to set
-//	 */
-//	public void setPassword(String password) {
-//		this.password = password;
-//	}
-//
-//	/**
-//	 * @return the password
-//	 */
-//	public String getPassword() {
-//		return password;
-//	}
-	
 }

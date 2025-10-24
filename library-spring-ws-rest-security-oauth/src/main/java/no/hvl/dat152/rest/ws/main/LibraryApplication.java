@@ -12,9 +12,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaRepositories("no.hvl.dat152.rest.ws.repository")
 @EntityScan("no.hvl.dat152.rest.ws.model")
 @ComponentScan(basePackages = {"no.hvl.dat152.rest.ws.service", 
-								"no.hvl.dat152.rest.ws.controller", 
-								"no.hvl.dat152.rest.ws.main.config",
-								"no.hvl.dat152.rest.ws.security"})
+		"no.hvl.dat152.rest.ws.controller", 
+		"no.hvl.dat152.rest.ws.main.config"})
 public class LibraryApplication {
 	
 	public static void main(String[] args) {

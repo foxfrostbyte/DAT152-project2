@@ -49,36 +49,25 @@ public class LibraryExceptionHandler {
 	}
 	
 	/**
-	 * Specific error message for order
+	 * Specific error message for update
 	 * @param ex
 	 * @return
 	 */
 	@ExceptionHandler(value = OrderNotFoundException.class)
 	public ResponseEntity<String> orderFailed(OrderNotFoundException ex) {
 		
-		return new ResponseEntity<>("An error occured: " + ex.getMessage(), HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>("An error occured: " + ex.getMessage(), HttpStatus.NOT_MODIFIED);
 	}
 	
 	/**
-	 * Specific error message for user
+	 * Specific error message for update
 	 * @param ex
 	 * @return
 	 */
 	@ExceptionHandler(value = UserNotFoundException.class)
 	public ResponseEntity<String> userFailed(UserNotFoundException ex) {
 		
-		return new ResponseEntity<>("An error occured: " + ex.getMessage(), HttpStatus.NOT_FOUND);
-	}
-	
-	/**
-	 * Specific error message for user
-	 * @param ex
-	 * @return
-	 */
-	@ExceptionHandler(value = UnauthorizedOrderActionException.class)
-	public ResponseEntity<String> unauthorizedOrder(UnauthorizedOrderActionException ex) {
-		
-		return new ResponseEntity<>("An error occured: " + ex.getMessage(), HttpStatus.UNAUTHORIZED);
+		return new ResponseEntity<>("An error occured: " + ex.getMessage(), HttpStatus.NOT_MODIFIED);
 	}
 	
 	/**

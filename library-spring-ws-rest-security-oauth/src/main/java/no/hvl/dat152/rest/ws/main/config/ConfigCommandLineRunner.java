@@ -10,20 +10,18 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import no.hvl.dat152.rest.ws.exceptions.AuthorNotFoundException;
 import no.hvl.dat152.rest.ws.model.Author;
 import no.hvl.dat152.rest.ws.model.Book;
 import no.hvl.dat152.rest.ws.model.Order;
-import no.hvl.dat152.rest.ws.model.Role;
 import no.hvl.dat152.rest.ws.model.User;
 import no.hvl.dat152.rest.ws.repository.AuthorRepository;
 import no.hvl.dat152.rest.ws.repository.BookRepository;
-import no.hvl.dat152.rest.ws.repository.RoleRepository;
 import no.hvl.dat152.rest.ws.repository.UserRepository;
 import no.hvl.dat152.rest.ws.service.AuthorService;
 
@@ -44,15 +42,11 @@ class ConfigCommandLineRunner implements CommandLineRunner  {
   @Autowired
   UserRepository userRepository;
   
-  @Autowired
-  RoleRepository roleRepository;
-  
   @Override
   public void run(String... args) throws Exception {
 	  
 	  authorRepository.saveAll(createDefaultAuthors());
 	  bookRepository.saveAll(creatDefaultBooks());
-	  roleRepository.saveAll(createDefaultRoles());
 	  userRepository.saveAll(createDefaultUsersPlusOrders());
    
   }
@@ -67,7 +61,6 @@ class ConfigCommandLineRunner implements CommandLineRunner  {
 		authors.add(new Author("Keith", "Ross"));
 		authors.add(new Author("Martin", "Kleppmann"));
 		authors.add(new Author("Cormen", "Leiserson"));
-		authors.add(new Author("Rajkumar", "Buyya"));
 		
 		return authors;
 	}
@@ -80,7 +73,6 @@ class ConfigCommandLineRunner implements CommandLineRunner  {
 		Author author4 = authorService.findById(4);
 		Author author5 = authorService.findById(5);
 		Author author6 = authorService.findById(6);
-		Author author7 = authorService.findById(7);
 		
 		Set<Author> authors = new HashSet<Author>();
 		Book book1 = new Book();
@@ -118,25 +110,6 @@ class ConfigCommandLineRunner implements CommandLineRunner  {
 		authors5.add(author5);
 		book5.setAuthors(authors5);
 		
-		Book book6 = new Book();
-		book6.setIsbn("978-1449373320");
-		book6.setTitle("Designing Data-Intensive Applications");
-		book6.addAuthor(author5);
-		
-		Book book7 = new Book();
-		book7.setIsbn("978-0262046305");
-		book7.setTitle("Introduction To Algorithms");
-		book7.addAuthor(author6);
-		
-		Book book8 = new Book();
-		book8.setIsbn("978-0470887998");
-		book8.setTitle("Cloud Computing: Principles and Paradigms");
-		book7.addAuthor(author7);
-		
-		//"978-0470887998","Cloud Computing: Principles and Paradigms"
-		//"978-0262046305","Introduction to Algorithms"
-		//"978-1449373320","Designing Data-Intensive Applications"
-		
 		
 		List<Book> books =  new ArrayList<Book>();		
 		books.add(book1);
@@ -149,63 +122,26 @@ class ConfigCommandLineRunner implements CommandLineRunner  {
 	}
 	
 	private Iterable<User> createDefaultUsersPlusOrders(){
-		
 		List<User> users = new ArrayList<>();
 		
-		// user1 (roles = USER)
-		User user1 = new User("user1@email.com","User1_Firstname", "User1_Lastname");
-		
-		// add roles
-		Role role1 = roleRepository.findByName("USER");
-		user1.addRole(role1);
-		System.out.println("Role = "+role1.getName());
-		
+		// user1
+		User user1 = new User("Robert", "Isaac");
 		// orders
 		Order order1 = new Order("ghijk1234", LocalDate.now().plusWeeks(2));		
 		user1.addOrder(order1);
-		Order order2 = new Order("qabfde1230", LocalDate.now().plusWeeks(3));		
-		user1.addOrder(order1);
-		user1.addOrder(order2);
 		
-		
-		//user2 (roles = ADMIN)
-		User user2 = new User("user2@email.com","User2_Firstname", "User2_Lastname");
-		
-		// add roles
-		Role role = roleRepository.findByName("ADMIN");
-		user2.addRole(role);
-		
-		// add order
+		//user2
+		User user2 = new User("Kristin", "Solberg");
 		Order order2_1 = new Order("abcde1234", LocalDate.now().plusWeeks(3));
+		Order order2_2 = new Order("qabfde1230", LocalDate.now().plusWeeks(3));
 		user2.addOrder(order2_1);
-
-		
-		//user 3  (roles = USER)
-		User user3 = new User("user3@email.com", "User3_Firstname", "User3_Lastname");
-		// add roles
-		Role role31 = roleRepository.findByName("USER");
-
-		user3.addRole(role31);
+		user2.addOrder(order2_2);
 		
 		users.add(user1);
 		users.add(user2);
-		users.add(user3);
 		
 		return users;
 		
-	}
-	
-	// we take the roles we have configured in our property file (application.properties)
-	@Value("#{'${user.resource.roles}'.split(',')}")
-	private List<String> userRoles;
-	
-	private Iterable<Role> createDefaultRoles(){
-		List<Role> roles = new ArrayList<>();
-		for(String role : userRoles) {
-			roles.add(new Role(role));
-		}
-		
-		return roles;
 	}
 
 }
