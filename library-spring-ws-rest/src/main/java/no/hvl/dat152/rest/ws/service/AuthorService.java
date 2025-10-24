@@ -44,9 +44,6 @@ public class AuthorService {
 		return (List<Author>) authorRepository.findAll();
 	}
 
-	// TODO public void deleteById(int id) throws AuthorNotFoundException
-	// Unsure if implementation needed. Lacks to-do in controller + test for it. Asked teacher. Might delete later.
-
 	public Set<Book> findBooksByAuthorId(int id) throws AuthorNotFoundException {
 		Author author = authorRepository.findById(id)
 				.orElseThrow(()-> new AuthorNotFoundException("Author with the id: "+id+ "not found!"));
