@@ -4,3 +4,6 @@
 
 # Build related
 target/
+
+# Keycloak related
+keycloak/
