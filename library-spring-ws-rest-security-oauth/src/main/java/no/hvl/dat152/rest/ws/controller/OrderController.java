@@ -38,7 +38,7 @@ public class OrderController {
     private OrderService orderService;
 
     @GetMapping("/orders")
-    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Object> getAllBorrowOrders(
             @RequestParam(required = false) String expiry,
             @RequestParam(defaultValue = "0") int page,
@@ -51,7 +51,7 @@ public class OrderController {
             LocalDate expiryDate = LocalDate.parse(expiry);
             orders = orderService.findByExpiryDate(expiryDate, pageable);
         } else {
-            orders = orderService.findAllOrders();
+            orders = orderService.findAllOrders(pageable);
         }
 
         if (orders.isEmpty()) {
@@ -62,7 +62,7 @@ public class OrderController {
     }
 
     @GetMapping("/orders/{id}")
-    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Object> getBorrowOrder(@PathVariable Long id)
             throws OrderNotFoundException {
 
@@ -79,7 +79,7 @@ public class OrderController {
     }
 
     @PutMapping("/orders/{id}")
-    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Object> updateOrder(
             @PathVariable Long id,
             @RequestBody Order order)
@@ -90,7 +90,7 @@ public class OrderController {
     }
 
     @DeleteMapping("/orders/{id}")
-    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Object> deleteBookOrder(@PathVariable Long id)
             throws OrderNotFoundException {
 

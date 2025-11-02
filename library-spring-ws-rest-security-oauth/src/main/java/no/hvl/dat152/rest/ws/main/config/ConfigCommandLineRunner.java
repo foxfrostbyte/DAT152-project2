@@ -125,15 +125,22 @@ class ConfigCommandLineRunner implements CommandLineRunner  {
 		List<User> users = new ArrayList<>();
 		
 		// user1
-		User user1 = new User("Robert", "Isaac");
-		user1.setEmail("robert@gmail.com");
-		// orders
-		Order order1 = new Order("ghijk1234", LocalDate.now().plusWeeks(2));		
+		User user1 = new User("User1_Firstname", "User1_Lastname");
+		user1.setEmail("user1@email.com");
+		user1.setRoles("USER");
+
+		Order order1 = new Order("ghijk1234", LocalDate.now().plusWeeks(2));
+		Order order1_2 = new Order("rstuv1540", LocalDate.now().plusWeeks(3));
+		Order order1_3 = new Order("mnopq9999", LocalDate.now().plusWeeks(4));
 		user1.addOrder(order1);
+		user1.addOrder(order1_2);
+		user1.addOrder(order1_3);
 		
-		//user2
-		User user2 = new User("Kristin", "Solberg");
-		user2.setEmail("Solberg@hotmail.com");
+		// user2
+		User user2 = new User("User2_Firstname", "User2_Lastname");
+		user2.setEmail("user2@email.com");
+		user2.setRoles("ADMIN");
+		
 		Order order2_1 = new Order("abcde1234", LocalDate.now().plusWeeks(3));
 		Order order2_2 = new Order("qabfde1230", LocalDate.now().plusWeeks(3));
 		user2.addOrder(order2_1);

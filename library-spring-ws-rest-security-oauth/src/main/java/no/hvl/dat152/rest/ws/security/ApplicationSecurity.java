@@ -16,7 +16,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -24,7 +24,7 @@ import org.springframework.security.web.SecurityFilterChain;
  * @author tdoy
  */
 @Configuration
-@EnableMethodSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 public class ApplicationSecurity {
 	
 	@Autowired
@@ -37,8 +37,13 @@ public class ApplicationSecurity {
 		http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 		http.authorizeHttpRequests(authorize -> 
 				authorize.anyRequest().authenticated());
+		
+		JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+		jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(this::extractAuthorities);
+		jwtAuthenticationConverter.setPrincipalClaimName("email");
+		
 		http.oauth2ResourceServer(oauth2 -> oauth2
-				.jwt(jwtconfig -> jwtconfig.jwtAuthenticationConverter(jwt -> RoleConverter(jwt))));
+				.jwt(jwtconfig -> jwtconfig.jwtAuthenticationConverter(jwtAuthenticationConverter)));
 		
 		http.addFilterAfter(authTokenFilter, BearerTokenAuthenticationFilter.class);
 		
@@ -46,43 +51,49 @@ public class ApplicationSecurity {
 	}
 
 	
-	private JwtAuthenticationToken RoleConverter(Jwt jwt) {
+	private Collection<GrantedAuthority> extractAuthorities(Jwt jwt) {
 		
-		// initialize
-		Collection<GrantedAuthority> rgrantedAuthorities = null;
-		Collection<GrantedAuthority> cgrantedAuthorities = null;
+		// initialize as empty collections
+		Collection<GrantedAuthority> rgrantedAuthorities = new java.util.ArrayList<>();
+		Collection<GrantedAuthority> cgrantedAuthorities = new java.util.ArrayList<>();
 		
 		// this is realm roles
 		try {
 			Map<String, Collection<String>> realmAccess = jwt.getClaim("realm_access");
-			Collection<String> realmroles = realmAccess.get("roles");
-			rgrantedAuthorities = realmroles.stream()
-					.map(role -> new SimpleGrantedAuthority(role))
-					.collect(Collectors.toList());
-		}catch(Exception e) {
-			//
+			if (realmAccess != null) {
+				Collection<String> realmroles = realmAccess.get("roles");
+				if (realmroles != null) {
+					rgrantedAuthorities = realmroles.stream()
+							.map(role -> new SimpleGrantedAuthority(role))
+							.collect(Collectors.toList());
+				}
+			}
+		}catch(Exception ignored) {
+
 		}
-		// this is client roles
 		try {
-		Map<String, Map<String, Collection<String>>> resource_claim = jwt.getClaim("resource_access");
-		Map<String, Collection<String>> clientAccess = resource_claim.get("dat152oblig2");
-		Collection<String> roles = clientAccess.get("roles");
+			Map<String, Map<String, Collection<String>>> resource_claim = jwt.getClaim("resource_access");
+			if (resource_claim != null) {
+				Map<String, Collection<String>> clientAccess = resource_claim.get("dat152oblig2");
+				if (clientAccess != null) {
+					Collection<String> roles = clientAccess.get("roles");
+					if (roles != null) {
+						cgrantedAuthorities = roles.stream()
+								.map(role -> new SimpleGrantedAuthority(role))
+								.collect(Collectors.toList());
+					}
+				}
+			}
+		} catch(Exception ignored) {
 		
-		cgrantedAuthorities = roles.stream()
-				.map(role -> new SimpleGrantedAuthority(role))
-				.collect(Collectors.toList());
-		}catch(Exception e) {
-			//
 		}
 		
-		try {
-			cgrantedAuthorities.addAll(rgrantedAuthorities);
-		}catch(Exception e) {
-			//
-		}
+		Collection<GrantedAuthority> allAuthorities = new java.util.ArrayList<>();
+		allAuthorities.addAll(cgrantedAuthorities);
+		allAuthorities.addAll(rgrantedAuthorities);
 		
-		System.out.println("All Roles = "+cgrantedAuthorities);
+		System.out.println("All Roles = "+allAuthorities);
 		
-		return new JwtAuthenticationToken(jwt, cgrantedAuthorities);
+		return allAuthorities;
 	}
 }

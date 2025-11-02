@@ -42,7 +42,7 @@ public class BookController {
 	private BookService bookService;
 
 	@GetMapping("/books")
-	@PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public ResponseEntity<Object> getAllBooks() {
 		List<Book> books = bookService.findAll();
 		if (books.isEmpty())
@@ -51,7 +51,7 @@ public class BookController {
 	}
 
 	@GetMapping("/books/{isbn}")
-	@PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public ResponseEntity<Object> getBook(@PathVariable String isbn) throws BookNotFoundException {
 		Book book = bookService.findByISBN(isbn);
 		return new ResponseEntity<>(book, HttpStatus.OK);
@@ -59,21 +59,21 @@ public class BookController {
 	}
 
 	@PostMapping("/books")
-	@PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public ResponseEntity<Book> createBook(@RequestBody Book book) {
 		Book nbook = bookService.saveBook(book);
 		return new ResponseEntity<>(nbook, HttpStatus.CREATED);
 	}
 
 	@GetMapping("/books/{isbn}/authors")
-	@PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public ResponseEntity<Object> getAuthorsOfBooksByISBN(@PathVariable String isbn) throws BookNotFoundException {
 		Set<Author> authors = bookService.findAuthorsOfBookByISBN(isbn);
 		return new ResponseEntity<>(authors, HttpStatus.OK);
 	}
 
 	@PutMapping("/books/{isbn}")
-	@PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public ResponseEntity<Object> updateBookByISBN(@RequestBody Book book, @PathVariable String isbn)
 			throws BookNotFoundException {
 		Book b = bookService.updateBook(book, isbn);
@@ -81,7 +81,7 @@ public class BookController {
 	}
 
 	@DeleteMapping("/books/{isbn}")
-	@PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public ResponseEntity<Void> deleteBookByISBN(@PathVariable String isbn) throws BookNotFoundException {
 		bookService.deleteByISBN(isbn);
 		return new ResponseEntity<>(HttpStatus.OK);

@@ -85,16 +85,21 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 		// create user in the library database if it does not exist
 		Optional<User> libuser = userRepository.findByEmail(email);
 
-		User user1 = libuser.orElse(null);
-
+		User user1;
 		if (libuser.isEmpty()) {
 			user1 = userRepository.save(user);
-			System.out.println(user1);
+			System.out.println("Created new user from JWT: " + user1);
 		} else {
+			user1 = libuser.get();
+			// Update user information from JWT token
+			user1.setFirstname(firstname);
+			user1.setLastname(lastname);
+			// Don't update roles from realm_access as they might not match
+			user1 = userRepository.save(user1);
 			user.setUserid(user1.getUserid());
 		}
 
-		return UserDetailsImpl.build(user, oauthJwtToken.getAuthorities());
+		return UserDetailsImpl.build(user1, oauthJwtToken.getAuthorities());
 
 	}
 

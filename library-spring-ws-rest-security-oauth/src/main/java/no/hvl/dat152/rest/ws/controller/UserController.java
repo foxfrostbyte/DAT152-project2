@@ -39,7 +39,7 @@ public class UserController {
 	private UserService userService;
 
 	@GetMapping("/users")
-	@PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public ResponseEntity<Object> getUsers() {
 
 		List<User> users = userService.findAllUsers();
@@ -52,7 +52,7 @@ public class UserController {
 	}
 
 	@GetMapping(value = "/users/{id}")
-	@PreAuthorize("hasAuthority('SCOPE_ADMIN') or @userService.findUser(#id).getEmail() == authentication.name")
+	@PreAuthorize("hasAuthority('ADMIN') or @userService.findUser(#id).getEmail() == authentication.name")
 	public ResponseEntity<Object> getUser(@PathVariable Long id) throws UserNotFoundException, OrderNotFoundException {
 
 		User user = userService.findUser(id);
@@ -62,21 +62,21 @@ public class UserController {
 	}
 
 	@PostMapping("/users")
-	@PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public ResponseEntity<Object> createUser(@RequestBody User user) {
 		User savedUser = userService.saveUser(user);
 		return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
 	}
 
 	@PutMapping("/users/{id}")
-	@PreAuthorize("hasAuthority('SCOPE_ADMIN') or @userService.findUser(#id).getEmail() == authentication.name")
+	@PreAuthorize("hasAuthority('ADMIN') or @userService.findUser(#id).getEmail() == authentication.name")
 	public ResponseEntity<Object> updateUser(@RequestBody User user, @PathVariable Long id) throws UserNotFoundException {
 		User updatedUser = userService.updateUser(user, id);
 		return new ResponseEntity<>(updatedUser, HttpStatus.OK);
 	}
 
 	@DeleteMapping("/users/{id}")
-	@PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public ResponseEntity<Object> deleteUser(@PathVariable Long id)
 			throws UserNotFoundException {
 		userService.deleteUser(id);
@@ -84,7 +84,7 @@ public class UserController {
 	}
 
 	@GetMapping("/users/{id}/orders")
-	@PreAuthorize("hasAuthority('SCOPE_ADMIN') or @userService.findUser(#id).getEmail() == authentication.name")
+	@PreAuthorize("hasAuthority('ADMIN') or @userService.findUser(#id).getEmail() == authentication.name")
 	public ResponseEntity<Object> getUserOrders(@PathVariable Long id)
 			throws UserNotFoundException {
 		Set<Order> orders = userService.getUserOrders(id);
@@ -94,7 +94,7 @@ public class UserController {
 	}
 
 	@GetMapping("/users/{uid}/orders/{oid}")
-	@PreAuthorize("hasAuthority('SCOPE_ADMIN') or @userService.findUser(#uid).getEmail() == authentication.name")
+	@PreAuthorize("hasAuthority('ADMIN') or @userService.findUser(#uid).getEmail() == authentication.name")
 	public ResponseEntity<Object> getUserOrder(@PathVariable Long uid, @PathVariable Long oid)
 			throws UserNotFoundException, OrderNotFoundException {
 		Order order = userService.getUserOrder(uid, oid);
@@ -102,7 +102,7 @@ public class UserController {
 	}
 
 	@DeleteMapping("/users/{uid}/orders/{oid}")
-	@PreAuthorize("hasAuthority('SCOPE_ADMIN') or @userService.findUser(#uid).getEmail() == authentication.name")
+	@PreAuthorize("hasAuthority('ADMIN') or @userService.findUser(#uid).getEmail() == authentication.name")
 	public ResponseEntity<Object> deleteUserOrder(@PathVariable Long uid, @PathVariable Long oid)
 			throws UserNotFoundException, OrderNotFoundException {
 		userService.deleteOrderForUser(uid, oid);
@@ -110,28 +110,26 @@ public class UserController {
 	}
 
 	@PostMapping("/users/{uid}/orders")
-	@PreAuthorize("hasAuthority('SCOPE_ADMIN') or @userService.findUser(#uid).getEmail() == authentication.name")
+	@PreAuthorize("hasAuthority('ADMIN') or @userService.findUser(#uid).getEmail() == authentication.name")
 	public ResponseEntity<Object> createUserOrder(
 			@PathVariable Long uid,
 			@RequestBody Order order)
 			throws UserNotFoundException, OrderNotFoundException {
 
-		userService.createOrdersForUser(uid, order);
+		Order savedOrder = userService.createOrdersForUser(uid, order);
 
-		Link selfLink = linkTo(methodOn(UserController.class).getUserOrder(uid, order.getId())).withSelfRel();
+		Link selfLink = linkTo(methodOn(UserController.class).getUserOrder(uid, savedOrder.getId())).withSelfRel();
 		Link allOrdersLink = linkTo(methodOn(UserController.class).getUserOrders(uid)).withRel("all-orders");
 		Link userLink = linkTo(methodOn(UserController.class).getUser(uid)).withRel("user");
-		Link deleteLink = linkTo(methodOn(UserController.class).deleteUserOrder(uid, order.getId()))
+		Link deleteLink = linkTo(methodOn(UserController.class).deleteUserOrder(uid, savedOrder.getId()))
 				.withRel("delete-order");
 
-		order.add(selfLink);
-		order.add(allOrdersLink);
-		order.add(userLink);
-		order.add(deleteLink);
+		savedOrder.add(selfLink);
+		savedOrder.add(allOrdersLink);
+		savedOrder.add(userLink);
+		savedOrder.add(deleteLink);
 
-		List<Order> orders = List.of(order);
-
-		return new ResponseEntity<>(orders, HttpStatus.CREATED);
+		return new ResponseEntity<>(List.of(savedOrder), HttpStatus.CREATED);
 	}
 
 }

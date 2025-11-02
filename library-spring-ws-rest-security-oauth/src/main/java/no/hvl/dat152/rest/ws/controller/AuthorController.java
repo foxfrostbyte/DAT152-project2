@@ -31,7 +31,7 @@ public class AuthorController {
     private AuthorService authorService;
 
     @GetMapping("/authors")
-    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Object> getAllAuthors() {
         List<Author> authors = authorService.findAll();
         if (authors.isEmpty()) {
@@ -41,28 +41,28 @@ public class AuthorController {
     }
 
     @GetMapping("/authors/{id}")
-    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Object> getAuthor(@PathVariable int id) throws AuthorNotFoundException {
         Author author = authorService.findById(id);
         return new ResponseEntity<>(author, HttpStatus.OK);
     }
 
     @GetMapping("/authors/{id}/books")
-    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Object> getBooksByAuthorId(@PathVariable int id) throws AuthorNotFoundException {
         Set<Book> books = authorService.findBooksByAuthorId(id);
         return new ResponseEntity<>(books, HttpStatus.OK);
     }
 
     @PostMapping("/authors")
-    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Object> createAuthor(@RequestBody Author author) {
         Author a = authorService.saveAuthor(author);
         return new ResponseEntity<>(a, HttpStatus.CREATED);
     }
 
     @PutMapping("/authors/{id}")
-    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Object> updateAuthor(@RequestBody Author author, @PathVariable int id)
             throws AuthorNotFoundException {
         Author a = authorService.updateAuthor(author, id);

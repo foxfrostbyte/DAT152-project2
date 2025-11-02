@@ -4,11 +4,11 @@ import no.hvl.dat152.rest.ws.exceptions.OrderNotFoundException;
 import no.hvl.dat152.rest.ws.exceptions.UserNotFoundException;
 import no.hvl.dat152.rest.ws.model.Order;
 import no.hvl.dat152.rest.ws.model.User;
+import no.hvl.dat152.rest.ws.repository.OrderRepository;
 import no.hvl.dat152.rest.ws.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -20,6 +20,9 @@ public class UserService {
 
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private OrderRepository orderRepository;
 
 	public List<User> findAllUsers(){
         return (List<User>) userRepository.findAll();
@@ -64,35 +67,34 @@ public class UserService {
 				return order;
 			}
 		}
-		
 		throw new OrderNotFoundException("Order with id: " + oid + " not found for user with id: " + userid);
 	}
 
 	public void deleteOrderForUser(Long userid, Long oid) throws UserNotFoundException, OrderNotFoundException {
-		User user = findUser(userid);
-		Set<Order> orders = user.getOrders();
-		Iterator<Order> iterator = orders.iterator();
-		boolean found = false;
-
-		while (iterator.hasNext()) {
-			Order order = iterator.next();
-			if (order.getId().equals(oid)) {
-				iterator.remove();
-				found = true;
-				break;
-			}
+		if (!orderRepository.existsById(oid)) {
+			return;
 		}
-
-		if (!found) {
+		
+		Long orderUserId = orderRepository.findUserID(oid);
+		if (orderUserId == null || !orderUserId.equals(userid)) {
 			throw new OrderNotFoundException("Order with id: " + oid + " not found for user with id: " + userid);
 		}
-
-		userRepository.save(user);
+		
+		User user = findUser(userid);
+		user.getOrders().size();
+		user.getOrders().removeIf(o -> o.getId() != null && o.getId().equals(oid));
+		userRepository.saveAndFlush(user);
+		orderRepository.deleteById(oid);
 	}
 
-	public void createOrdersForUser(Long userid, Order order) throws UserNotFoundException {
+	public Order createOrdersForUser(Long userid, Order order) throws UserNotFoundException {
         User user = findUser(userid);
         user.addOrder(order);
-		userRepository.save(user);
+		userRepository.saveAndFlush(user);
+		
+		return orderRepository.findByUserId(userid).stream()
+				.filter(o -> o.getIsbn().equals(order.getIsbn()) && o.getExpiry().equals(order.getExpiry()))
+				.findFirst()
+				.orElse(order);
 	}
 }
